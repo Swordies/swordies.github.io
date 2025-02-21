@@ -1,7 +1,7 @@
 import React from 'react'
 import BBS from './charactertalker'
 
-function B() {
+function BBS() {
   return (
     <div className="App">
       <BBS />
