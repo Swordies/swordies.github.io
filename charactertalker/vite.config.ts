@@ -4,10 +4,10 @@ import { defineConfig } from "vite"
 
 export default defineConfig({
 	plugins: [react()],
-+   base: 'swordies.github.io/charactertalker',
+	base: '/charactertalker/',
 	resolve: {
-		alias: {
-			"@": path.resolve(__dirname, "./src"),
-		},
+	  alias: {
+		"@": path.resolve(path.dirname(new URL(import.meta.url).pathname), "./src"),
+	  },
 	},
-})
+  })
