@@ -1,0 +1,20 @@
+{
+  "files": {
+    "main.css": "/charactertalker/static/css/main.8cefc0c9.chunk.css",
+    "main.js": "/charactertalker/static/js/main.c788b380.chunk.js",
+    "main.js.map": "/charactertalker/static/js/main.c788b380.chunk.js.map",
+    "runtime-main.js": "/charactertalker/static/js/runtime-main.ab1820f7.js",
+    "runtime-main.js.map": "/charactertalker/static/js/runtime-main.ab1820f7.js.map",
+    "static/js/2.012ec77e.chunk.js": "/charactertalker/static/js/2.012ec77e.chunk.js",
+    "static/js/2.012ec77e.chunk.js.map": "/charactertalker/static/js/2.012ec77e.chunk.js.map",
+    "index.html": "/charactertalker/index.html",
+    "static/css/main.8cefc0c9.chunk.css.map": "/charactertalker/static/css/main.8cefc0c9.chunk.css.map",
+    "static/js/2.012ec77e.chunk.js.LICENSE.txt": "/charactertalker/static/js/2.012ec77e.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.ab1820f7.js",
+    "static/js/2.012ec77e.chunk.js",
+    "static/css/main.8cefc0c9.chunk.css",
+    "static/js/main.c788b380.chunk.js"
+  ]
+}

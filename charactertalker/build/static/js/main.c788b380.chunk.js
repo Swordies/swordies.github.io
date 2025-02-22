@@ -1,0 +1,2 @@
+(this.webpackJsonpcharactertalker=this.webpackJsonpcharactertalker||[]).push([[0],{10:function(e,t,c){"use strict";c.r(t);var r=c(1),a=c.n(r),n=c(3),s=c.n(n),h=c(0);var i=()=>Object(h.jsx)("div",{children:Object(h.jsx)("h1",{children:"Welcome to Character Talker!"})});c(9);s.a.render(Object(h.jsx)(a.a.StrictMode,{children:Object(h.jsx)(i,{})}),document.getElementById("root"))},9:function(e,t,c){}},[[10,1,2]]]);
+//# sourceMappingURL=main.c788b380.chunk.js.map
