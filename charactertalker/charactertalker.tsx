@@ -19,6 +19,7 @@ interface Message {
   borderStyle: string
   borderWidth: string
   usernameBoxColor: string
+  font: string
   createdAt: Date
 }
 
@@ -33,6 +34,7 @@ interface Reply {
   borderStyle: string
   borderWidth: string
   usernameBoxColor: string
+  font: string
   createdAt: Date
 }
 
@@ -45,6 +47,7 @@ interface Profile {
   borderStyle: string
   borderWidth: string
   usernameBoxColor: string
+  font: string
 }
 
 const cookieName = 'bbs_messages'
@@ -99,12 +102,13 @@ const loadProfileFromCookie = (): Profile => {
         borderStyle: profile.borderStyle || 'solid',
         borderWidth: profile.borderWidth || '2px',
         usernameBoxColor: profile.usernameBoxColor || '#ffffff',
+        font: profile.font || 'Arial',
       }
     } catch (e) {
       console.error('Error parsing profile cookie data:', e)
     }
   }
-  return { username: '', avatarUrl: '', backgroundColor: '#ffffff', emoji: '', borderColor: '#000000', borderStyle: 'solid', borderWidth: '2px', usernameBoxColor: '#ffffff' }
+  return { username: '', avatarUrl: '', backgroundColor: '#ffffff', emoji: '', borderColor: '#000000', borderStyle: 'solid', borderWidth: '2px', usernameBoxColor: '#ffffff', font: 'Arial' }
 }
 
 const loadThemeFromCookie = (): string => {
@@ -131,6 +135,7 @@ const loadAliasesFromCookie = (): Profile[] => {
         borderStyle: alias.borderStyle || 'solid',
         borderWidth: alias.borderWidth || '2px',
         usernameBoxColor: alias.usernameBoxColor || '#ffffff',
+        font: alias.font || 'Arial',
       }))
     } catch (e) {
       console.error('Error parsing aliases cookie data:', e)
@@ -215,7 +220,7 @@ const MessageItem = memo(({ message, editingMessageId, editingMessageText, setEd
     <div key={message.id} className="flex items-start mb-4">
       <div className="relative mr-4">
         <div
-          className={`bg-cover bg-center rounded-full w-20 h-20 border-${message.borderStyle} ${message.borderWidth} border-${message.borderColor}`}
+          className={`bg-cover bg-center rounded-full w-20 h-20 border-2 border-${message.borderColor}`}
           style={{ backgroundImage: `url(${message.avatarUrl || 'https://picsum.photos/100?random=' + message.id})` }}
         />
         {message.emoji && (
@@ -228,7 +233,7 @@ const MessageItem = memo(({ message, editingMessageId, editingMessageText, setEd
         <div className="flex items-center mb-2">
           <div
             className={`inline-block px-2 py-1 rounded ${theme === 'dark' ? 'bg-gray-600 text-white' : 'bg-gray-200 text-black'}`}
-            style={{ backgroundColor: message.usernameBoxColor, color: getContrastingColor(message.usernameBoxColor) }}
+            style={{ backgroundColor: message.usernameBoxColor, color: getContrastingColor(message.usernameBoxColor), fontFamily: message.font }}
           >
             <strong>{message.username}</strong>
           </div>
@@ -253,7 +258,7 @@ const MessageItem = memo(({ message, editingMessageId, editingMessageText, setEd
         ) : (
           <div
             className={`p-2 rounded ${theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-gray-100 text-black'}`}
-            style={{ backgroundColor: message.backgroundColor, color: getContrastingColor(message.backgroundColor) }}
+            style={{ backgroundColor: message.backgroundColor, color: getContrastingColor(message.backgroundColor), fontFamily: message.font }}
           >
             {message.message}
           </div>
@@ -274,6 +279,23 @@ const MessageItem = memo(({ message, editingMessageId, editingMessageText, setEd
             </Button>
           </div>
         )}
+        {replyingToMessageId === message.id && (
+          <div className="flex items-center space-x-2 mt-2">
+            <Input
+              type="text"
+              placeholder="Reply message"
+              value={replyMessage}
+              onChange={(e) => setReplyMessage(e.target.value)}
+              className={`w-full ${theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-white text-black'}`}
+            />
+            <Button variant="secondary" size="icon" className={`w-5 h-5 p-0 ${theme === 'dark' ? 'bg-gray-700 text-white' : ''}`} onClick={() => addReply(message.id, replyMessage)}>
+              <Plus className="w-3 h-3" />
+            </Button>
+            <Button variant="secondary" size="icon" className={`w-5 h-5 p-0 ${theme === 'dark' ? 'bg-gray-700 text-white' : ''}`} onClick={() => setReplyingToMessageId(null)}>
+              <X className="w-3 h-3" />
+            </Button>
+          </div>
+        )}
         {message.replies.length > 0 && <div className="mt-4"></div>}
         {message.replies.map((reply) => (
           <div key={reply.id} className="flex items-start mt-2 pl-10">
@@ -281,7 +303,7 @@ const MessageItem = memo(({ message, editingMessageId, editingMessageText, setEd
               <div className="flex items-center justify-end mb-2">
                 <div
                   className={`inline-block px-2 py-1 rounded ${theme === 'dark' ? 'bg-gray-600 text-white' : 'bg-gray-200 text-black'}`}
-                  style={{ backgroundColor: reply.usernameBoxColor, color: getContrastingColor(reply.usernameBoxColor) }}
+                  style={{ backgroundColor: reply.usernameBoxColor, color: getContrastingColor(reply.usernameBoxColor), fontFamily: reply.font }}
                 >
                   <strong>{reply.username}</strong>
                 </div>
@@ -306,7 +328,7 @@ const MessageItem = memo(({ message, editingMessageId, editingMessageText, setEd
               ) : (
                 <div
                   className={`p-2 rounded ${theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-gray-100 text-black'}`}
-                  style={{ backgroundColor: reply.backgroundColor, color: getContrastingColor(reply.backgroundColor) }}
+                  style={{ backgroundColor: reply.backgroundColor, color: getContrastingColor(reply.backgroundColor), fontFamily: reply.font }}
                 >
                   {reply.message}
                 </div>
@@ -347,7 +369,7 @@ const MessageItem = memo(({ message, editingMessageId, editingMessageText, setEd
             </div>
             <div className="relative ml-4">
               <div
-                className={`bg-cover bg-center rounded-full w-20 h-20 border-${reply.borderStyle} ${reply.borderWidth} border-${reply.borderColor}`}
+                className={`bg-cover bg-center rounded-full w-20 h-20 border-2 border-${reply.borderColor}`}
                 style={{ backgroundImage: `url(${reply.avatarUrl || 'https://picsum.photos/100?random=' + reply.id})` }}
               />
               {reply.emoji && (
@@ -358,23 +380,6 @@ const MessageItem = memo(({ message, editingMessageId, editingMessageText, setEd
             </div>
           </div>
         ))}
-        {replyingToMessageId === message.id && (
-          <div className="flex items-center space-x-2 mt-2">
-            <Input
-              type="text"
-              placeholder="Reply message"
-              value={replyMessage}
-              onChange={(e) => setReplyMessage(e.target.value)}
-              className={`w-full ${theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-white text-black'}`}
-            />
-            <Button variant="secondary" size="icon" className={`w-5 h-5 p-0 ${theme === 'dark' ? 'bg-gray-700 text-white' : ''}`} onClick={() => addReply(message.id, replyMessage)}>
-              <Plus className="w-3 h-3" />
-            </Button>
-            <Button variant="secondary" size="icon" className={`w-5 h-5 p-0 ${theme === 'dark' ? 'bg-gray-700 text-white' : ''}`} onClick={() => setReplyingToMessageId(null)}>
-              <X className="w-3 h-3" />
-            </Button>
-          </div>
-        )}
       </div>
     </div>
   )
@@ -383,17 +388,56 @@ const MessageItem = memo(({ message, editingMessageId, editingMessageText, setEd
 const availableEmojis = ['😊', '😢', '🤔', '👍', '👎', '😂', '😍', '😎', '😱', '🥳']
 const availableBorderStyles = ['solid', 'dashed', 'dotted']
 const availableBorderWidths = ['1px', '2px', '3px', '4px', '5px']
+const availableFonts = [
+  'Arial',
+  'Courier New',
+  'Georgia',
+  'Times New Roman',
+  'Verdana',
+  'sans-serif',
+  'serif',
+  'monospace',
+  'cursive',
+  'fantasy',
+  'Arial Black',
+  'Comic Sans MS',
+  'Lucida Console',
+  'Lucida Sans Unicode',
+  'Palatino Linotype',
+  'Trebuchet MS',
+  'Impact',
+  'Garamond',
+  'Bookman Old Style',
+  'Gill Sans',
+  'Helvetica',
+  'Arial Narrow',
+  'Arial Rounded MT Bold',
+  'Baskerville Old Face',
+  'Bodoni MT',
+  'Book Antiqua',
+  'Century Gothic',
+  'Century Schoolbook',
+  'Futura',
+  'Gadget',
+  'Geneva',
+  'Helvetica Neue',
+  'Lucida Grande',
+  'Optima',
+  'Palatino',
+  'Perpetua',
+  'Rockwell',
+  'Symbol',
+  'Tahoma',
+  'Terminal',
+  'Times',
+  'Webdings',
+  'Wingdings',
+  'Zapfino'
+]
 
 export default function BBS() {
   const [messages, setMessages] = useState<Message[]>(loadMessagesFromCookie())
-  const [username, setUsername] = useState(loadProfileFromCookie().username)
-  const [avatarUrl, setAvatarUrl] = useState(loadProfileFromCookie().avatarUrl)
-  const [backgroundColor, setBackgroundColor] = useState(loadProfileFromCookie().backgroundColor)
-  const [emoji, setEmoji] = useState(loadProfileFromCookie().emoji)
-  const [borderColor, setBorderColor] = useState(loadProfileFromCookie().borderColor)
-  const [borderStyle, setBorderStyle] = useState(loadProfileFromCookie().borderStyle)
-  const [borderWidth, setBorderWidth] = useState<string>(loadProfileFromCookie().borderWidth) // Ensure default value
-  const [usernameBoxColor, setUsernameBoxColor] = useState(loadProfileFromCookie().usernameBoxColor)
+  const [profile, setProfile] = useState<Profile>(loadProfileFromCookie())
   const [newMessage, setNewMessage] = useState('')
   const [editingMessageId, setEditingMessageId] = useState<number | null>(null)
   const [editingMessageText, setEditingMessageText] = useState<string>('')
@@ -407,14 +451,15 @@ export default function BBS() {
   const [isAliasesVisible, setIsAliasesVisible] = useState(false)
   const [isProfileUpdated, setIsProfileUpdated] = useState(false)
   const [isEmojiPickerVisible, setIsEmojiPickerVisible] = useState(false)
+  const [isFontPickerVisible, setIsFontPickerVisible] = useState(false)
 
   useEffect(() => {
     saveMessagesToCookie(messages)
   }, [messages])
 
   useEffect(() => {
-    saveProfileToCookie({ username, avatarUrl, backgroundColor, emoji, borderColor, borderStyle, borderWidth, usernameBoxColor })
-  }, [username, avatarUrl, backgroundColor, emoji, borderColor, borderStyle, borderWidth, usernameBoxColor])
+    saveProfileToCookie(profile)
+  }, [profile])
 
   useEffect(() => {
     document.documentElement.className = theme
@@ -441,39 +486,30 @@ export default function BBS() {
     if (newMessage.trim()) {
       const messageObj: Message = {
         id: Date.now(),
-        username,
-        avatarUrl,
+        ...profile,
         message: newMessage,
-        backgroundColor,
-        emoji,
         replies: [],
-        borderColor,
-        borderStyle,
-        borderWidth,
-        usernameBoxColor,
         createdAt: new Date(),
       }
       setMessages([...messages, messageObj])
       setNewMessage('')
     }
-  }, [newMessage, username, avatarUrl, backgroundColor, emoji, messages, borderColor, borderStyle, borderWidth, usernameBoxColor])
+  }, [newMessage, messages, profile])
 
   const deleteMessage = useCallback((id: number) => {
-    const updatedMessages = messages.filter((msg) => msg.id !== id)
-    setMessages(updatedMessages)
+    setMessages(messages.filter((msg) => msg.id !== id))
   }, [messages])
 
   const editMessage = useCallback((id: number, newMessage: string) => {
-    const updatedMessages = messages.map((msg) =>
+    setMessages(messages.map((msg) =>
       msg.id === id ? { ...msg, message: newMessage } : msg
-    )
-    setMessages(updatedMessages)
+    ))
     setEditingMessageId(null)
     setEditingMessageText('')
   }, [messages])
 
   const addReply = useCallback((messageId: number, replyMessage: string) => {
-    const updatedMessages = messages.map((msg) =>
+    setMessages(messages.map((msg) =>
       msg.id === messageId
         ? {
             ...msg,
@@ -481,40 +517,31 @@ export default function BBS() {
               ...msg.replies,
               {
                 id: Date.now(),
-                username,
-                avatarUrl,
+                ...profile,
                 message: replyMessage,
-                backgroundColor,
-                emoji,
-                borderColor,
-                borderStyle,
-                borderWidth,
-                usernameBoxColor,
                 createdAt: new Date(),
               },
             ],
           }
         : msg
-    )
-    setMessages(updatedMessages)
+    ))
     setReplyMessage('')
     setReplyingToMessageId(null)
-  }, [messages, username, avatarUrl, backgroundColor, emoji, borderColor, borderStyle, borderWidth, usernameBoxColor])
+  }, [messages, profile])
 
   const deleteReply = useCallback((messageId: number, replyId: number) => {
-    const updatedMessages = messages.map((msg) =>
+    setMessages(messages.map((msg) =>
       msg.id === messageId
         ? {
             ...msg,
             replies: msg.replies.filter((reply) => reply.id !== replyId),
           }
         : msg
-    )
-    setMessages(updatedMessages)
+    ))
   }, [messages])
 
   const editReply = useCallback((messageId: number, replyId: number, newReplyMessage: string) => {
-    const updatedMessages = messages.map((msg) =>
+    setMessages(messages.map((msg) =>
       msg.id === messageId
         ? {
             ...msg,
@@ -523,8 +550,7 @@ export default function BBS() {
             ),
           }
         : msg
-    )
-    setMessages(updatedMessages)
+    ))
     setEditingReplyId(null)
     setEditingReplyText('')
   }, [messages])
@@ -538,30 +564,26 @@ export default function BBS() {
   }, [areButtonsVisible])
 
   const saveAlias = useCallback(() => {
-    const newAlias: Profile = { username, avatarUrl, backgroundColor, emoji, borderColor, borderStyle, borderWidth, usernameBoxColor }
-    setAliases([...aliases, newAlias])
-  }, [username, avatarUrl, backgroundColor, emoji, borderColor, borderStyle, borderWidth, usernameBoxColor, aliases])
+    setAliases([...aliases, profile])
+  }, [profile, aliases])
 
   const switchAlias = useCallback((alias: Profile) => {
-    setUsername(alias.username)
-    setAvatarUrl(alias.avatarUrl)
-    setBackgroundColor(alias.backgroundColor)
-    setEmoji(alias.emoji)
-    setBorderColor(alias.borderColor)
-    setBorderStyle(alias.borderStyle)
-    setBorderWidth(alias.borderWidth)
-    setUsernameBoxColor(alias.usernameBoxColor)
+    setProfile(alias)
     updateProfile()
   }, [updateProfile])
 
   const deleteAlias = useCallback((index: number) => {
-    const updatedAliases = aliases.filter((_, i) => i !== index)
-    setAliases(updatedAliases)
+    setAliases(aliases.filter((_, i) => i !== index))
   }, [aliases])
 
   const selectEmoji = useCallback((selectedEmoji: string) => {
-    setEmoji(selectedEmoji)
+    setProfile(prevProfile => ({ ...prevProfile, emoji: selectedEmoji }))
     setIsEmojiPickerVisible(false)
+  }, [])
+
+  const selectFont = useCallback((selectedFont: string) => {
+    setProfile(prevProfile => ({ ...prevProfile, font: selectedFont }))
+    setIsFontPickerVisible(false)
   }, [])
 
   const getBorderStylePreview = (style: string) => {
@@ -602,7 +624,7 @@ export default function BBS() {
                   <div key={index} className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
                       <div
-                        className={`bg-cover bg-center rounded-full w-8 h-8 border-${alias.borderStyle} ${alias.borderWidth} border-${alias.borderColor}`}
+                        className={`bg-cover bg-center rounded-full w-8 h-8 border-2 border-${alias.borderColor}`}
                         style={{ backgroundImage: `url(${alias.avatarUrl || 'https://picsum.photos/100?random=' + index})` }}
                       />
                       <div>
@@ -611,7 +633,7 @@ export default function BBS() {
                           <span className="inline-block w-4 h-4" style={{ backgroundColor: alias.backgroundColor }} />
                         </div>
                         <div className="text-sm">
-                          <span className="inline-block px-1 py-0.5 rounded text-xs" style={{ backgroundColor: alias.usernameBoxColor, color: getContrastingColor(alias.usernameBoxColor) }}>
+                          <span className="inline-block px-1 py-0.5 rounded text-xs" style={{ backgroundColor: alias.usernameBoxColor, color: getContrastingColor(alias.usernameBoxColor), fontFamily: alias.font }}>
                             Username
                           </span>
                         </div>
@@ -647,8 +669,8 @@ export default function BBS() {
                 <Input
                   type="text"
                   placeholder="Username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  value={profile.username}
+                  onChange={(e) => setProfile(prevProfile => ({ ...prevProfile, username: e.target.value }))}
                   className={`w-full ${theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-white text-black'}`}
                 />
               </motion.div>
@@ -660,8 +682,8 @@ export default function BBS() {
                 <Input
                   type="text"
                   placeholder="Avatar URL"
-                  value={avatarUrl}
-                  onChange={(e) => setAvatarUrl(e.target.value)}
+                  value={profile.avatarUrl}
+                  onChange={(e) => setProfile(prevProfile => ({ ...prevProfile, avatarUrl: e.target.value }))}
                   className={`w-full ${theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-white text-black'}`}
                 />
               </motion.div>
@@ -673,8 +695,8 @@ export default function BBS() {
                 <Input
                   type="text"
                   placeholder="Background Color (Hex)"
-                  value={backgroundColor}
-                  onChange={(e) => setBackgroundColor(e.target.value)}
+                  value={profile.backgroundColor}
+                  onChange={(e) => setProfile(prevProfile => ({ ...prevProfile, backgroundColor: e.target.value }))}
                   className={`w-full ${theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-white text-black'}`}
                 />
               </motion.div>
@@ -687,8 +709,8 @@ export default function BBS() {
                   <Input
                     type="text"
                     placeholder="Emoji"
-                    value={emoji}
-                    onChange={(e) => setEmoji(e.target.value)}
+                    value={profile.emoji}
+                    onChange={(e) => setProfile(prevProfile => ({ ...prevProfile, emoji: e.target.value }))}
                     className={`w-full ${theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-white text-black'}`}
                     onClick={() => setIsEmojiPickerVisible(!isEmojiPickerVisible)}
                   />
@@ -719,8 +741,8 @@ export default function BBS() {
                 <Input
                   type="text"
                   placeholder="Border Color (Hex)"
-                  value={borderColor}
-                  onChange={(e) => setBorderColor(e.target.value)}
+                  value={profile.borderColor}
+                  onChange={(e) => setProfile(prevProfile => ({ ...prevProfile, borderColor: e.target.value }))}
                   className={`w-full ${theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-white text-black'}`}
                 />
               </motion.div>
@@ -729,7 +751,7 @@ export default function BBS() {
                 animate={{ backgroundColor: isProfileUpdated ? "#ffeb3b" : "transparent" }}
                 transition={{ duration: 0.3, ease: "easeInOut", repeat: 1, repeatType: "reverse" }}
               >
-                <Select value={borderStyle} onValueChange={(value) => setBorderStyle(value)}>
+                <Select value={profile.borderStyle} onValueChange={(value) => setProfile(prevProfile => ({ ...prevProfile, borderStyle: value }))}>
                   <SelectTrigger className={`w-full ${theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-white text-black'}`}>
                     <SelectValue placeholder="Border Style" />
                   </SelectTrigger>
@@ -748,7 +770,7 @@ export default function BBS() {
                 animate={{ backgroundColor: isProfileUpdated ? "#ffeb3b" : "transparent" }}
                 transition={{ duration: 0.3, ease: "easeInOut", repeat: 1, repeatType: "reverse" }}
               >
-                <Select value={borderWidth} onValueChange={(value) => setBorderWidth(value)}>
+                <Select value={profile.borderWidth} onValueChange={(value) => setProfile(prevProfile => ({ ...prevProfile, borderWidth: value }))}>
                   <SelectTrigger className={`w-full ${theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-white text-black'}`}>
                     <SelectValue placeholder="Border Width" />
                   </SelectTrigger>
@@ -769,10 +791,42 @@ export default function BBS() {
                 <Input
                   type="text"
                   placeholder="Username Box Color (Hex)"
-                  value={usernameBoxColor}
-                  onChange={(e) => setUsernameBoxColor(e.target.value)}
+                  value={profile.usernameBoxColor}
+                  onChange={(e) => setProfile(prevProfile => ({ ...prevProfile, usernameBoxColor: e.target.value }))}
                   className={`w-full ${theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-white text-black'}`}
                 />
+              </motion.div>
+              <motion.div
+                className="flex-1"
+                animate={{ backgroundColor: isProfileUpdated ? "#ffeb3b" : "transparent" }}
+                transition={{ duration: 0.3, ease: "easeInOut", repeat: 1, repeatType: "reverse" }}
+              >
+                <div className="relative">
+                  <Input
+                    type="text"
+                    placeholder="Font"
+                    value={profile.font}
+                    onChange={(e) => setProfile(prevProfile => ({ ...prevProfile, font: e.target.value }))}
+                    className={`w-full ${theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-white text-black'}`}
+                    onClick={() => setIsFontPickerVisible(!isFontPickerVisible)}
+                  />
+                  {isFontPickerVisible && (
+                    <div className="absolute top-full left-0 w-full bg-white shadow-md rounded-b-md z-10">
+                      <div className="flex flex-col space-y-2 p-2">
+                        {availableFonts.map((fontOption) => (
+                          <div
+                            key={fontOption}
+                            className="w-full text-center cursor-pointer p-2 hover:bg-gray-100"
+                            onClick={() => selectFont(fontOption)}
+                            style={{ fontFamily: fontOption }}
+                          >
+                            {fontOption}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </motion.div>
               <Button onClick={updateProfile} className="w-24 text-sm">
                 Update Profile
