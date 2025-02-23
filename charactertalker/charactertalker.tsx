@@ -225,14 +225,14 @@ const MessageItem = memo(({ message, editingMessageId, editingMessageText, setEd
         )}
       </div>
       <div className="flex-1">
-        <div className="flex items-start mb-2">
+        <div className="flex items-center mb-2">
           <div
             className={`inline-block px-2 py-1 rounded ${theme === 'dark' ? 'bg-gray-600 text-white' : 'bg-gray-200 text-black'}`}
             style={{ backgroundColor: message.usernameBoxColor, color: getContrastingColor(message.usernameBoxColor) }}
           >
             <strong>{message.username}</strong>
           </div>
-          <div className="ml-2 text-sm text-gray-500 mt-1">
+          <div className="ml-2 text-sm text-gray-500">
             {formattedDate(message.createdAt)}
           </div>
         </div>
@@ -278,14 +278,14 @@ const MessageItem = memo(({ message, editingMessageId, editingMessageText, setEd
         {message.replies.map((reply) => (
           <div key={reply.id} className="flex items-start mt-2 pl-10">
             <div className="flex-1">
-              <div className="flex items-start justify-end mb-2">
+              <div className="flex items-center justify-end mb-2">
                 <div
                   className={`inline-block px-2 py-1 rounded ${theme === 'dark' ? 'bg-gray-600 text-white' : 'bg-gray-200 text-black'}`}
                   style={{ backgroundColor: reply.usernameBoxColor, color: getContrastingColor(reply.usernameBoxColor) }}
                 >
                   <strong>{reply.username}</strong>
                 </div>
-                <div className="ml-2 text-sm text-gray-500 mt-1">
+                <div className="ml-2 text-sm text-gray-500">
                   {formattedDate(reply.createdAt)}
                 </div>
               </div>
@@ -827,3 +827,4 @@ export default function BBS() {
     </Card>
   )
 }
+
