@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, memo } from 'react'
+import { useState, useEffect, useCallback, memo, useRef } from 'react'
 import { Button } from "/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "/components/ui/card"
 import { Input } from "/components/ui/input"
@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Trash, Edit, Plus, X, MessageCircle, Sun, Moon, Eye, EyeOff, User, Save, ChevronDown, ChevronUp, EmojiHappy } from "lucide-react"
 import { motion } from "framer-motion"
 import { formatDistanceToNow, format } from 'date-fns'
+import './App.css'
 
 interface Message {
   id: number
@@ -394,45 +395,12 @@ const availableFonts = [
   'Georgia',
   'Times New Roman',
   'Verdana',
-  'sans-serif',
-  'serif',
-  'monospace',
-  'cursive',
-  'fantasy',
-  'Arial Black',
-  'Comic Sans MS',
-  'Lucida Console',
-  'Lucida Sans Unicode',
-  'Palatino Linotype',
-  'Trebuchet MS',
-  'Impact',
-  'Garamond',
-  'Bookman Old Style',
-  'Gill Sans',
-  'Helvetica',
-  'Arial Narrow',
-  'Arial Rounded MT Bold',
-  'Baskerville Old Face',
-  'Bodoni MT',
-  'Book Antiqua',
-  'Century Gothic',
   'Century Schoolbook',
-  'Futura',
-  'Gadget',
-  'Geneva',
-  'Helvetica Neue',
-  'Lucida Grande',
-  'Optima',
-  'Palatino',
-  'Perpetua',
-  'Rockwell',
-  'Symbol',
-  'Tahoma',
-  'Terminal',
-  'Times',
-  'Webdings',
-  'Wingdings',
-  'Zapfino'
+  'Impact',
+  'Comic Sans',
+  'Papyrus',
+  'Segoe Print',
+  'monospace'
 ]
 
 export default function BBS() {
@@ -452,6 +420,8 @@ export default function BBS() {
   const [isProfileUpdated, setIsProfileUpdated] = useState(false)
   const [isEmojiPickerVisible, setIsEmojiPickerVisible] = useState(false)
   const [isFontPickerVisible, setIsFontPickerVisible] = useState(false)
+  const [googleFontUrl, setGoogleFontUrl] = useState('')
+  const fontPickerRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     saveMessagesToCookie(messages)
@@ -476,6 +446,29 @@ export default function BBS() {
   useEffect(() => {
     saveAliasesToCookie(aliases)
   }, [aliases])
+
+  useEffect(() => {
+    if (googleFontUrl) {
+      const link = document.createElement('link')
+      link.href = googleFontUrl
+      link.rel = 'stylesheet'
+      document.head.appendChild(link)
+    }
+  }, [googleFontUrl])
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (fontPickerRef.current && !fontPickerRef.current.contains(event.target as Node)) {
+        setIsFontPickerVisible(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
 
   const updateProfile = useCallback(() => {
     setIsProfileUpdated(true)
@@ -755,7 +748,7 @@ export default function BBS() {
                   <SelectTrigger className={`w-full ${theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-white text-black'}`}>
                     <SelectValue placeholder="Border Style" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className={`${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-black'}`}>
                     {availableBorderStyles.map((style) => (
                       <SelectItem key={style} value={style} className="flex items-center space-x-2">
                         {getBorderStylePreview(style)}
@@ -774,7 +767,7 @@ export default function BBS() {
                   <SelectTrigger className={`w-full ${theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-white text-black'}`}>
                     <SelectValue placeholder="Border Width" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className={`${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-black'}`}>
                     {availableBorderWidths.map((width) => (
                       <SelectItem key={width} value={width} className="flex items-center space-x-2">
                         <span className="text-sm">{width}</span>
@@ -801,7 +794,7 @@ export default function BBS() {
                 animate={{ backgroundColor: isProfileUpdated ? "#ffeb3b" : "transparent" }}
                 transition={{ duration: 0.3, ease: "easeInOut", repeat: 1, repeatType: "reverse" }}
               >
-                <div className="relative">
+                <div className="relative" ref={fontPickerRef}>
                   <Input
                     type="text"
                     placeholder="Font"
@@ -811,12 +804,12 @@ export default function BBS() {
                     onClick={() => setIsFontPickerVisible(!isFontPickerVisible)}
                   />
                   {isFontPickerVisible && (
-                    <div className="absolute top-full left-0 w-full bg-white shadow-md rounded-b-md z-10">
+                    <div className="absolute top-full left-0 w-full shadow-md rounded-b-md z-10" style={{ backgroundColor: theme === 'dark' ? '#1f2937' : '#ffffff' }}>
                       <div className="flex flex-col space-y-2 p-2">
                         {availableFonts.map((fontOption) => (
                           <div
                             key={fontOption}
-                            className="w-full text-center cursor-pointer p-2 hover:bg-gray-100"
+                            className={`w-full text-center cursor-pointer p-2 hover:bg-gray-700 hover:text-white ${theme === 'dark' ? 'text-white' : 'text-black'}`}
                             onClick={() => selectFont(fontOption)}
                             style={{ fontFamily: fontOption }}
                           >
@@ -827,6 +820,19 @@ export default function BBS() {
                     </div>
                   )}
                 </div>
+              </motion.div>
+              <motion.div
+                className="flex-1"
+                animate={{ backgroundColor: isProfileUpdated ? "#ffeb3b" : "transparent" }}
+                transition={{ duration: 0.3, ease: "easeInOut", repeat: 1, repeatType: "reverse" }}
+              >
+                <Input
+                  type="text"
+                  placeholder="Google Font URL"
+                  value={googleFontUrl}
+                  onChange={(e) => setGoogleFontUrl(e.target.value)}
+                  className={`w-full ${theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-white text-black'}`}
+                />
               </motion.div>
               <Button onClick={updateProfile} className="w-24 text-sm">
                 Update Profile
